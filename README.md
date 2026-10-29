@@ -27,6 +27,13 @@ dictionaries in use are not touched.
 The pairs come from [fcitx5-slm-ime](https://github.com/oogasawa/fcitx5-slm-ime), which makes them from the Japanese
 Wikipedia and FineWeb-2 for the training of its model.
 
+## Other tools
+
+- `tools/slm_ime_dict.py` manages dictionaries by field (packs) and builds the Anthy private dictionary
+  (`~/.anthy/private_words_default`) from the packs that are on. The lines of that file must be sorted by reading.
+- `tools/skk2anthy.py` converts an SKK dictionary (the entries without okurigana) to Anthy's text form.
+- `tools/manbyo2skk.py` converts the Manbyo dictionary of medical terms (CC BY 4.0) to an SKK dictionary.
+
 ## Tests
 
 ```sh
