@@ -32,3 +32,10 @@ Wikipedia and FineWeb-2 for the training of its model.
 ```sh
 python3 -m unittest discover tests
 ```
+
+## License
+
+The tools (`tools/`, `tests/`) are under the Apache License 2.0 (`LICENSE`).
+
+The dictionaries are made from the Japanese Wikipedia (CC BY-SA 4.0) and FineWeb-2 (ODC-By 1.0), and are under
+the Creative Commons Attribution-ShareAlike 4.0 International License (`LICENSE-DATA`).
