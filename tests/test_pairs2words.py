@@ -11,6 +11,10 @@ class WordOfTest(unittest.TestCase):
     def test_a_noun_and_its_particle(self):
         self.assertEqual(word_of("せいどが", "精度が"), ("せいど", "精度", "が"))
 
+    def test_a_word_of_one_character_is_left_out(self):
+        self.assertIsNone(word_of("おちる", "落ちる"))
+        self.assertIsNone(word_of("はなが", "花が"))
+
     def test_a_noun_without_a_tail(self):
         self.assertEqual(word_of("せいど", "精度"), ("せいど", "精度", ""))
 

@@ -15,14 +15,22 @@ for their reading are kept.
    that are nouns for sure are kept; the rules are in the script.
 2. `tools/anthy_lacks.py` asks Anthy, through `libanthy`, for the candidates of each reading, and keeps the words
    that are not among them.
+3. `tools/reading_check.py` keeps the words whose reading is made of the readings of their characters in
+   [KANJIDIC2](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project) (CC BY-SA 4.0). The readings in the pairs were
+   given by a language model, and it reads some words wrong again and again (交流 as こうりょう, 手間 as てまえ).
 
 ```sh
 python3 tools/pairs2words.py PAIRS_DIR... > words.tsv
-HOME=/path/to/a/copy python3 tools/anthy_lacks.py < words.tsv > lacks.tsv
+python3 tools/anthy_lacks.py < words.tsv | python3 tools/reading_check.py kanjidic2.xml.gz > lacks.tsv
 ```
 
-`anthy_lacks.py` uses the dictionaries of `$HOME/.anthy`. Run it with `HOME` set to a copy, so that the
-dictionaries in use are not touched.
+`anthy_lacks.py` uses the dictionaries of the user who runs it. Anthy finds the home directory in the user
+database, not in `$HOME`; to try a dictionary in another directory without touching the one in use, build
+`tools/fakehome.c` and run with `LD_PRELOAD=./fakehome.so FAKE_HOME=/that/directory`:
+
+```sh
+gcc -shared -fPIC -O2 -o fakehome.so tools/fakehome.c -ldl
+```
 
 The pairs come from [fcitx5-slm-ime](https://github.com/oogasawa/fcitx5-slm-ime), which makes them from the Japanese
 Wikipedia and FineWeb-2 for the training of its model.

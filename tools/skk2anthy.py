@@ -3,7 +3,7 @@
 Convert an SKK dictionary (okuri-nasi entries) to the text form of an Anthy private dictionary.
 
 Usage: skk2anthy.py SKK-JISYO.law [--encoding euc-jp] [--limit N] [--frequency 1] > words.txt
-       cat words.txt | HOME=... anthy-dic-tool --load
+       cat words.txt | anthy-dic-tool --load   (this replaces the private dictionary of the user)
 
 An SKK line is   reading /candidate1;annotation/candidate2/...   The converter keeps the entries whose reading is
 hiragana only (the okuri-ari entries, whose reading ends with a letter, and the entries with numbers or Lisp

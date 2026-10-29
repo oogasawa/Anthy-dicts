@@ -5,8 +5,10 @@ Keep the words that Anthy does not offer for their reading.
 Input:  reading <TAB> word [<TAB> ...] on stdin (what pairs2words.py writes)
 Output: the input lines whose word is not among Anthy's candidates for the reading taken as one bunsetsu
 
-Anthy is called through libanthy with the dictionaries of $HOME, as the input method would use them; run it with
-HOME set to a copy of ~/.anthy to keep the dictionaries of the user out of reach.
+Anthy is called through libanthy with the dictionaries of the user who runs it, as the input method would use them.
+Anthy finds the home directory in the user database, not in $HOME. To use the dictionaries of another directory,
+preload fakehome.so (built from fakehome.c) and set FAKE_HOME to that directory. Anthy only reads the dictionaries
+here.
 """
 import ctypes
 import sys

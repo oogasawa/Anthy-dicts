@@ -16,8 +16,10 @@ that are nouns for sure are kept:
     left out;
   - the word is seen with no tail, or with at least two different tails: the stem of a verb or an adjective is
     seen with one only, as 最|も and 既|に are, while a noun is seen with many (精度|が, 精度|の, 精度|を).
-A word must be seen --min-count times with the same reading, which leaves out most of the readings that the
-machine that made the pairs got wrong.
+A word of one character is left out: Anthy has the nouns of one kanji, and what is left of them here are the stems
+of verbs and adjectives (落|ちる, 冷|たい). A word must be seen --min-count times with the same reading. The
+machine that made the pairs reads some words wrong again and again (自粛 as じじゅく besides じしゅく); those
+readings are left out afterwards by reading_check.py.
 """
 import argparse
 import collections
@@ -51,7 +53,7 @@ def word_of(reading, text):
             and HIRAGANA_CHAR.match(text[-1 - common]):
         common += 1
     word, word_reading, tail = text[:len(text) - common], reading[:len(reading) - common], text[len(text) - common:]
-    if HIRAGANA_CHAR.search(word) or not KANJI.search(word) or not READING.match(word_reading):
+    if len(word) < 2 or HIRAGANA_CHAR.search(word) or not KANJI.search(word) or not READING.match(word_reading):
         return None
     particles = tail.rstrip(PUNCTUATION)
     if particles and not PARTICLE_RUN.match(particles):
