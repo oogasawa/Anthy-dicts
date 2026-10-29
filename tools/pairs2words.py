@@ -12,8 +12,10 @@ that are nouns for sure are kept:
   - the word has no hiragana in it (精度, 30代前半, アウェー感; not 取り合い, whose part あい may be okurigana);
   - the word has a kanji in it (a word in katakana alone is typed as it is read);
   - the reading of the word is hiragana only (an Anthy dictionary has no reading with digits or letters);
-  - the tail is empty or starts with a particle or a punctuation mark, so that the word is not the stem of a verb
-    or an adjective (書|く and 高|い are left out, 精度|が is kept).
+  - the tail is particles only, and punctuation marks after them (が, には, の、); 書|く, 高|い and 上|がる are
+    left out;
+  - the word is seen with no tail, or with at least two different tails: the stem of a verb or an adjective is
+    seen with one only, as 最|も and 既|に are, while a noun is seen with many (精度|が, 精度|の, 精度|を).
 A word must be seen --min-count times with the same reading, which leaves out most of the readings that the
 machine that made the pairs got wrong.
 """
@@ -30,6 +32,7 @@ READING = re.compile(r"^[ぁ-ゖー]+$")
 PARTICLES = ("が", "の", "を", "に", "へ", "と", "で", "や", "も", "は", "から", "まで", "より", "など", "だけ", "ほど",
              "ばかり", "こそ", "さえ", "でも", "しか", "について", "として", "による", "における")
 PUNCTUATION = "、。，．,.！？!?」』）)・：:；;"
+PARTICLE_RUN = re.compile("^(?:" + "|".join(sorted(PARTICLES, key=len, reverse=True)) + ")+$")
 
 
 def split_of(chunk_name):
@@ -50,9 +53,10 @@ def word_of(reading, text):
     word, word_reading, tail = text[:len(text) - common], reading[:len(reading) - common], text[len(text) - common:]
     if HIRAGANA_CHAR.search(word) or not KANJI.search(word) or not READING.match(word_reading):
         return None
-    if tail and not (tail.startswith(PARTICLES) or tail[0] in PUNCTUATION):
+    particles = tail.rstrip(PUNCTUATION)
+    if particles and not PARTICLE_RUN.match(particles):
         return None
-    return word_reading, word, tail
+    return word_reading, word, particles
 
 
 def main():
@@ -63,6 +67,7 @@ def main():
                         help="also read the chunks that kana-kanji-ime keeps for validation and test")
     args = parser.parse_args()
     counts = collections.Counter()
+    tails = collections.defaultdict(set)
     for pairs_dir in args.pairs_dirs:
         for name in sorted(os.listdir(pairs_dir)):
             if not name.endswith("_pairs.tsv") or (not args.all_splits and split_of(name) != "train"):
@@ -79,9 +84,13 @@ def main():
                         found = word_of(reading.strip(), text.strip())
                         if found:
                             counts[found[:2]] += 1
+                            if len(tails[found[:2]]) < 2:
+                                tails[found[:2]].add(found[2])
     for (reading, word), count in counts.most_common():
         if count < args.min_count:
             break
+        if "" not in tails[(reading, word)] and len(tails[(reading, word)]) < 2:
+            continue
         print(f"{reading}\t{word}\t{count}")
 
 
